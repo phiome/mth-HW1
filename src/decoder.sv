@@ -147,7 +147,7 @@ module decoder import typedef_pkg::*; (
                     3'b000: dinstr_o.op = SB;
                     3'b001: dinstr_o.op = SH;
                     3'b010: dinstr_o.op = SW;
-                    default: ;
+                    default: dinstr_o.valid = 1'b0 ;
                 endcase
             end
 
@@ -201,20 +201,22 @@ module decoder import typedef_pkg::*; (
                             dinstr_o.op = ADD;
                         else if (instr_i[31:25] == 7'b0000010)
                             dinstr_o.op = SUB;
+                        else dinstr.o.valid = 1'b0;
                     end
-                    3'b001: dinstr_o.op = SLL;
-                    3'b010: dinstr_o.op = SLT;
-                    3'b011: dinstr_o.op = SLTU;
-                    3'b100: dinstr_o.op = XOR;
+                    3'b001: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = SLL;
+                    3'b010: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = SLT;
+                    3'b011: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = SLTU;
+                    3'b100: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = XOR;
                     3'b101: begin
                         if (instr_i[31:25] == 7'b0000000)
                             dinstr_o.op = SRL;
                         else if (instr_i[31:25] == 7'b0000010)
                             dinstr_o.op = SRA;
+                        else dinstr_o.valid = 1'b0;
                     end
-                    3'b110: dinstr_o.op = OR;
-                    3'b111: dinstr_o.op = AND;
-                    default: ; 
+                    3'b110: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = OR;
+                    3'b111: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = AND;
+                    default: dinstr_o.valid = 1'b0; 
                 endcase
             end
 
