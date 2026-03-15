@@ -2,30 +2,28 @@
 /* verilator lint_off UNUSEDSIGNAL */
 
 module decoder import typedef_pkg::*; (
-    input  logic        clk_i,   // Bu sinyal sadece Verilator uyarılarını önlemek içindir.
+    input  logic        clk_i,   // this signal is just for awoid warnings in verilator.
     input  logic [31:0] instr_i,
-    output dinstr_t     dinstr_o // struct tanımı pkg içindedir.
+    output dinstr_t     dinstr_o // struct definition is inside the pkg
 );
 
-    // ==========================================
-    // 1. ADIM: Sinyalleri Parçalama (Decode)
-    // ==========================================
+    // 1st step: splitting the signals to parts
+    
     logic [6:0] opcode;
     logic [4:0] rd_idx, rs1_idx, rs2_idx;
     logic [2:0] funct3;
 
-    // Tablodaki şifrelenmiş yerleşimlere göre atamalar:
+    // assigning wires according to table
     assign opcode  = instr_i[19:13];
     assign rs2_idx = instr_i[24:20];
     assign rs1_idx = instr_i[12:8];
     assign funct3  = instr_i[7:5];
     assign rd_idx  = instr_i[4:0];
 
-    // ==========================================
-    // 2. ADIM: Kombinasyonel Mantık Bloğu
-    // ==========================================
+    // 2st step: combinational logic block
+
     always_comb begin
-        // LATCH ÖNLEYİCİ: Tüm sinyalleri varsayılan duruma (0) getir
+        // LATCH blocker: all signals are 0 
         dinstr_o.valid         = 1'b0;
         dinstr_o.is_mem        = 1'b0;
         dinstr_o.is_pc_changer = 1'b0;
@@ -37,15 +35,12 @@ module decoder import typedef_pkg::*; (
         dinstr_o.rs1_idx       = '0;
         dinstr_o.rs2_idx       = '0;
         dinstr_o.imm           = '0;
-        // Not: dinstr_o.op için typedef_pkg.sv'de muhtemelen bir "UNKNOWN" veya "NOP" varsayılanı vardır, 
-        // eğer hata alırsan buraya onu da ekleyebilirsin (örn: dinstr_o.op = NOP;)
 
-        // ==========================================
-        // 3. ADIM: Opcode'a Göre Komut İşleme
-        // ==========================================
+        // 3st step: Instruction Processing According to Opcode
+
         case (opcode)
             
-            // --- LUI Komutu ---
+            // LUI
             7'b1110101: begin 
                 dinstr_o.valid     = 1'b1;
                 dinstr_o.rd_valid  = 1'b1;
@@ -55,7 +50,7 @@ module decoder import typedef_pkg::*; (
                 dinstr_o.op        = LUI;
             end
 
-            // --- AUIPC Komutu ---
+            // AUIPC
             7'b1110100: begin 
                 dinstr_o.valid     = 1'b1;
                 dinstr_o.rd_valid  = 1'b1;
@@ -89,7 +84,7 @@ module decoder import typedef_pkg::*; (
                 dinstr_o.op            = JALR;
             end
 
-            // Branch Commands
+            // Branch instructions
             7'b1100011: begin 
                 dinstr_o.valid         = 1'b1;
                 dinstr_o.is_pc_changer = 1'b1; 
@@ -111,7 +106,7 @@ module decoder import typedef_pkg::*; (
                 endcase
             end
 
-            // Load Commands
+            // Load instructions
             7'b1100000: begin 
                 dinstr_o.valid     = 1'b1;
                 dinstr_o.is_mem    = 1'b1; 
@@ -132,7 +127,7 @@ module decoder import typedef_pkg::*; (
                 endcase
             end
 
-            // Store Commands
+            // Store instructions
             7'b1100001: begin 
                 dinstr_o.valid     = 1'b1;
                 dinstr_o.is_mem    = 1'b1; 
@@ -160,7 +155,7 @@ module decoder import typedef_pkg::*; (
                 dinstr_o.rs1_idx   = rs1_idx;
                 dinstr_o.imm_valid = 1'b1;
 
-                // zero-extend for shift commands, sign-extend for others
+                // zero-extend for shift instructions, sign-extend for others
                 if (funct3 == 3'b001 || funct3 == 3'b101) begin
                     dinstr_o.imm = { 27'b0, instr_i[24:20] }; 
                 end else begin
@@ -185,7 +180,7 @@ module decoder import typedef_pkg::*; (
                 endcase
             end
 
-// R-Type Commands
+// R-Type instructions
             7'b1110001: begin 
                 dinstr_o.valid     = 1'b1;
                 dinstr_o.rd_valid  = 1'b1;
@@ -217,7 +212,6 @@ module decoder import typedef_pkg::*; (
             end
 
             default: begin
-                // Tanımsız opcode gelirse valid = 0 olarak kalır (başta atandığı gibi)
             end
         endcase
     end
