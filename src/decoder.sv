@@ -185,7 +185,7 @@ module decoder import typedef_pkg::*; (
                 endcase
             end
 
-            // --- R-Tipi Komutlar (ADD, SUB, AND vb.) ---
+// --- R-Tipi Komutlar (ADD, SUB, AND vb.) ---
             7'b1110001: begin 
                 dinstr_o.valid     = 1'b1;
                 dinstr_o.rd_valid  = 1'b1;
@@ -197,25 +197,21 @@ module decoder import typedef_pkg::*; (
                 
                 case (funct3)
                     3'b000: begin
-                        if (instr_i[31:25] == 7'b0000000)
-                            dinstr_o.op = ADD;
-                        else if (instr_i[31:25] == 7'b0000010)
-                            dinstr_o.op = SUB;
-                        else dinstr.o.valid = 1'b0;
-                    end
-                    3'b001: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = SLL;
-                    3'b010: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = SLT;
-                    3'b011: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = SLTU;
-                    3'b100: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = XOR;
-                    3'b101: begin
-                        if (instr_i[31:25] == 7'b0000000)
-                            dinstr_o.op = SRL;
-                        else if (instr_i[31:25] == 7'b0000010)
-                            dinstr_o.op = SRA;
+                        if (instr_i[31:25] == 7'b0000000)      dinstr_o.op = ADD;
+                        else if (instr_i[31:25] == 7'b0000010) dinstr_o.op = SUB;
                         else dinstr_o.valid = 1'b0;
                     end
-                    3'b110: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = OR;
-                    3'b111: begin if(instr_i[31:25] == 7'b0000000) dinstr_o.op = AND;
+                    3'b001: if (instr_i[31:25] == 7'b0000000) dinstr_o.op = SLL;  else dinstr_o.valid = 1'b0;
+                    3'b010: if (instr_i[31:25] == 7'b0000000) dinstr_o.op = SLT;  else dinstr_o.valid = 1'b0;
+                    3'b011: if (instr_i[31:25] == 7'b0000000) dinstr_o.op = SLTU; else dinstr_o.valid = 1'b0;
+                    3'b100: if (instr_i[31:25] == 7'b0000000) dinstr_o.op = XOR;  else dinstr_o.valid = 1'b0;
+                    3'b101: begin
+                        if (instr_i[31:25] == 7'b0000000)      dinstr_o.op = SRL;
+                        else if (instr_i[31:25] == 7'b0000010) dinstr_o.op = SRA;
+                        else dinstr_o.valid = 1'b0;
+                    end
+                    3'b110: if (instr_i[31:25] == 7'b0000000) dinstr_o.op = OR;   else dinstr_o.valid = 1'b0;
+                    3'b111: if (instr_i[31:25] == 7'b0000000) dinstr_o.op = AND;  else dinstr_o.valid = 1'b0;
                     default: dinstr_o.valid = 1'b0; 
                 endcase
             end
