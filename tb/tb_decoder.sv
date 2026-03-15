@@ -408,12 +408,12 @@ module tb_decoder import typedef_pkg::*; ();
 			// --------------------------------------------------
 			// OPCODE
 			// --------------------------------------------------
-			inst[xxxx] = opcode_set[i];
+			inst[19:13] = opcode_set[i];
 
 			// --------------------------------------------------
 			// RD
 			// --------------------------------------------------
-			inst[xxxx] = rd_or_imm5[i];
+			inst[4:0] = rd_or_imm5[i];
 
 			// --------------------------------------------------
 			// FUNC3
@@ -421,7 +421,7 @@ module tb_decoder import typedef_pkg::*; ();
 			// func3t[2:0] = real func3
 			// --------------------------------------------------
 			if (func3t[i][0])
-					inst[xxxx] = func3t[i][3:1];
+					inst[7:5] = func3t[i][3:1];
 
 			// --------------------------------------------------
 			// RS1
@@ -429,22 +429,22 @@ module tb_decoder import typedef_pkg::*; ();
 			// rs1[i][5:1] = index
 			// --------------------------------------------------
 			if (rs1[i][0])
-					inst[xxxx] = rs1[i][5:1];
+					inst[12:8] = rs1[i][5:1];
 
 			// --------------------------------------------------
 			// RS2 or IMM[5:1]
 			// rs2_or_imm5[i][0] = valid
 			// --------------------------------------------------
 			if (rs2_or_imm5[i][0])
-					inst[xxxx] = rs2_or_imm5[i][5:1];
+					inst[24:20] = rs2_or_imm5[i][5:1];
 
 			// --------------------------------------------------
 			// U-TYPE (LUI / AUIPC)
 			// immediate_20_set[i][20] = valid
 			// --------------------------------------------------
 			if (immediate_20_set[i][20]) begin
-					inst[xxxx] = immediate_20_set[i][19:8];
-					inst[xxxx] = immediate_20_set[i][7:0];
+					inst[31:20] = immediate_20_set[i][19:8];
+					inst[12:5] = immediate_20_set[i][7:0];
 			end
 
 			// --------------------------------------------------
@@ -452,7 +452,7 @@ module tb_decoder import typedef_pkg::*; ();
 			// immediate_12_set[i][12] = valid
 			// --------------------------------------------------
 			if (immediate_12_set[i][12]) begin
-					inst[xxxx] = immediate_12_set[i][11:0];
+					inst[31:20] = immediate_12_set[i][11:0];
 			end
 
 			// --------------------------------------------------
@@ -461,7 +461,7 @@ module tb_decoder import typedef_pkg::*; ();
 			// imm_7_or_fixed_val[i][6:0] = data
 			// --------------------------------------------------
 			if (imm_7_or_fixed_val[i][0]) begin
-					inst[xxxx] = imm_7_or_fixed_val[i][7:1];
+					inst[31:25] = imm_7_or_fixed_val[i][7:1];
 			end
 
 			reordered_instruction_test[i] = inst;
