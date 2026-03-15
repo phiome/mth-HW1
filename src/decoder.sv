@@ -65,7 +65,7 @@ module decoder import typedef_pkg::*; (
                 dinstr_o.op        = AUIPC;
             end
 
-            // --- JAL Komutu ---
+            // JAL 
             7'b1101111: begin 
                 dinstr_o.valid         = 1'b1;
                 dinstr_o.is_pc_changer = 1'b1; 
@@ -76,7 +76,7 @@ module decoder import typedef_pkg::*; (
                 dinstr_o.op            = JAL;
             end
 
-            // --- JALR Komutu ---
+            // JALR 
             7'b1100111: begin 
                 dinstr_o.valid         = 1'b1;
                 dinstr_o.is_pc_changer = 1'b1;
@@ -89,7 +89,7 @@ module decoder import typedef_pkg::*; (
                 dinstr_o.op            = JALR;
             end
 
-            // --- Branch Komutları (BEQ, BNE, BLT vb.) ---
+            // Branch Commands
             7'b1100011: begin 
                 dinstr_o.valid         = 1'b1;
                 dinstr_o.is_pc_changer = 1'b1; 
@@ -111,7 +111,7 @@ module decoder import typedef_pkg::*; (
                 endcase
             end
 
-            // --- Load Komutları (LW, LB vb.) ---
+            // Load Commands
             7'b1100000: begin 
                 dinstr_o.valid     = 1'b1;
                 dinstr_o.is_mem    = 1'b1; 
@@ -132,7 +132,7 @@ module decoder import typedef_pkg::*; (
                 endcase
             end
 
-            // --- Store Komutları (SW, SB vb.) ---
+            // Store Commands
             7'b1100001: begin 
                 dinstr_o.valid     = 1'b1;
                 dinstr_o.is_mem    = 1'b1; 
@@ -151,7 +151,7 @@ module decoder import typedef_pkg::*; (
                 endcase
             end
 
-            // --- I-Tipi Aritmetik/Mantık ve Shift (ADDI, SLLI vb.) ---
+            // I-Type Arithmetic Logic and Shift
             7'b1100100: begin 
                 dinstr_o.valid     = 1'b1;
                 dinstr_o.rd_valid  = 1'b1;
@@ -160,7 +160,7 @@ module decoder import typedef_pkg::*; (
                 dinstr_o.rs1_idx   = rs1_idx;
                 dinstr_o.imm_valid = 1'b1;
 
-                // Shift komutlarında zero-extend, diğerlerinde sign-extend
+                // zero-extend for shift commands, sign-extend for others
                 if (funct3 == 3'b001 || funct3 == 3'b101) begin
                     dinstr_o.imm = { 27'b0, instr_i[24:20] }; 
                 end else begin
@@ -185,7 +185,7 @@ module decoder import typedef_pkg::*; (
                 endcase
             end
 
-// --- R-Tipi Komutlar (ADD, SUB, AND vb.) ---
+// R-Type Commands
             7'b1110001: begin 
                 dinstr_o.valid     = 1'b1;
                 dinstr_o.rd_valid  = 1'b1;
