@@ -1,3 +1,6 @@
+
+/* verilator lint_off UNUSEDSIGNAL */
+
 module decoder import typedef_pkg::*; (
     input  logic        clk_i,   // Bu sinyal sadece Verilator uyarılarını önlemek içindir.
     input  logic [31:0] instr_i,
